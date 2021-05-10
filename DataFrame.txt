@@ -1,0 +1,460 @@
+LINKS:
+https://hackersandslackers.com/pandas-dataframe-drop/
+
+to eliminate null values
+df[['a','b']].isnull()
+
+--------------------------------CREATE DATAFRAMES---------------------------------
+df = pd.DataFrame()
+df = pd.DataFrame(columns = [])
+df = pd.DataFrame(data,
+                  columns=[])
+
+df = pd.DataFrame(index=range(numRows),columns=range(numCols))  #with specific rows and columns
+df.loc[:,[colmn_names]]
+
+---------------------------DICT TO DATAFRAME------------------------------------
+------------inner dict keys as column names and outer dict keys as index------------------
+pd.DataFrame.from_dict(d, orient='index')
+
+----------------- OR if keys has single values -----------------
+df = pandas.DataFrame()
+temp_df = pandas.DataFrame(dict, index=[0])
+df = df.append(temp_df,ignore_index = True)
+
+
+-----------------------------EMPTY OR NOT EMPTY----------------------------
+if df.empty:
+if not df.empty:
+
+--------------------------------------TRANSPOSE------------------------------------------
+transposed_df =df1.T
+
+---------------------------------REVERSE DATAFRAME-----------------------------------
+df = df.reindex(index=df.index[::-1])
+
+---------------------------------RENAME COLUMNS------------------------------------
+df.rename(columns={'old_name': 'new_name'}, inplace=True)
+
+--------------------------------DATAFRAME TO LIST OF LIST WITH HEADER----------------------
+list_of_list = [list(df.columns.values)] + (df.values.tolist())
+
+--------------------------------SORT INDEX--------------------------------------
+df.sort_index(axis=1, inplace=True)
+
+example:
+table.columns = ['{}'.format(datetime.strptime(x, '%B-%y')) for x in table.columns]
+table.sort_index(axis=1, inplace=True)
+table.columns = ['{}'.format(datetime.strptime(x, '%Y-%m-%d %H:%M:%S').strftime('%B-%y')) for x in table.columns]
+
+-----------------------------------CONDITIONAL SLICING--------------------------------
+df_new = df[df['column_name'].between(value1,value2,inclusive = True)]
+df_new = df[df['column_name'] == value]
+df_new = df.loc[df['column_name'].isin(list_to_check)]
+final = df[df[colmn_name].isin(list_to_check)]
+final = df[~df[colmn_name].isin(list_to_check)]
+--------------------------------------------iloc-----------------------------------------
+Single selections using iloc and DataFrame
+Rows
+data.iloc[0] # first row of data frame Note a Series data type output.
+data.iloc[1] # second row of data frame
+data.iloc[-1] # last row of data frame
+Columns
+data.iloc[:,0] # first column of data frame
+data.iloc[:,1] # second column of data frame
+data.iloc[:,-1] # last column of data frame
+
+df =df.loc['row_name':, 'column_name':] #Multiple row and column selections
+
+data.iloc[0:5] # first five rows of dataframe
+data.iloc[:, 0:2] # first two columns of data frame with all rows
+data.iloc[[0,3,6,24], [0,5,6]] # 1st, 4th, 7th, 25th row + 1st 6th 7th columns.
+data.iloc[0:5, 5:8] # first 5 rows and 5th, 6th, 7th columns of data frame
+
+----------------------------------------loc---------------------------------------
+# Select rows with first name Antonio, # and all columns between 'city' and 'email'
+data.loc[data['first_name'] == 'Antonio', 'city':'email']
+
+# Select rows where the email column ends with 'hotmail.com', include all columns
+data.loc[data['email'].str.endswith("hotmail.com")]
+
+# Select rows with last_name equal to some values, all columns
+data.loc[data['first_name'].isin(['France', 'Tyisha', 'Eric'])]
+
+# Select rows with first name Antonio AND hotmail email addresses
+data.loc[data['email'].str.endswith("gmail.com") & (data['first_name'] == 'Antonio')]
+
+# select rows with id column between 100 and 200, and just return 'postal' and 'web' columns
+data.loc[(data['id'] > 100) & (data['id'] <= 200), ['postal', 'web']]
+
+# A lambda function that yields True/False values can also be used.
+# Select rows where the company name has 4 words in it.
+data.loc[data['company_name'].apply(lambda x: len(x.split(' ')) == 4)]
+
+# Selections can be achieved outside of the main .loc for clarity:
+# Form a separate variable with your selections:
+idx = data['company_name'].apply(lambda x: len(x.split(' ')) == 4)
+# Select only the True values in 'idx' and only the 3 columns specified:
+data.loc[idx, ['email', 'first_name', 'company']]
+
+------------------------------------DATAFRAME TO LIST-------------------------------
+list = df.values.tolist()
+
+----------------------------------REPLACE---------------------------------
+final_df[column_name] = final_df[column_name].apply(lambda x: float(x.replace(',','')))
+df[] = df[].replace(" ", " ")
+df[] = df[].replace("_",r"",regex = True)
+df[] = df[].fillna(0)
+df[] = df[].apply(pd.to_numeric)
+df[] = df[].str.replace("+","") #if blank value or use apply function
+df[] = df[].apply(lambda row : row.replace("+", ""))
+
+
+----------------SAVE AND READ DATAFRAME----------------
+df.to_excel('path.xlsx',index = None)
+df.to_csv('path.csv',index = None)
+df = pd.read_csv(path)
+df = pd.read_excel(path)
+
+---------------------------CREATE DATAFRAME COPY-------------------------
+Types:
+1. Shallow Copy
+2. Deep Copy
+if set (deep = True)---------> will not change original df if copied df is changed (by default it is True)
+if set (deep = False)--------> will point to original df and will change original df if copied df is changed
+
+new_df = old_df.copy()
+new_df = old_df[[..,..]].copy()
+
+-----------------------ROUND OFF-------------------------
+df = np.round(df,decimal = 2)
+
+-----------------UNIQUE NAMES from a column in DATAFRAME-----------------------
+df.column_name.unique()
+ex. df.name.unique() = will give list of uniue names from the column
+
+
+---------------------------DROP BY CONDITION-------------------------------
+my_dataframe.dropna(axis=0, how='any', thresh=None, subset=None, inplace=False)
+
+Axis: Specifies to drop by row or column. 0 means row, 1 means column.
+How: Accepts one of two possible values: any or all. This will either drop an axis which is completely empty (all), or an axis with even just a single empty cell (any).
+Thresh: Here's an interesting one: thresh accepts an integer, and will drop an axis only if that number threshold of empty cells is breached.
+Subset: Accepts an array of which axis' to consider, as opposed to considering all by default.
+Inplace: If you haven't come across inplace yet, learn this now: changes will NOT be made to the DataFrame you're touching unless this is set to True. It's False by default.
+-----
+new_data = data.dropna(axis = 0, how ='any') 
+
+# dropping column with all null values 
+new.dropna(axis = 1, how ='all', inplace = True) 
+df.dropna(thresh=2)   #Drop row if it does not have at least two values that are **not** NaN
+
+# to select a col with not NaN rows
+df = df[df['EPS'].notna()]
+------------
+def movecol(df, cols_to_move=[], ref_col='', place='After'):
+    
+    cols = df.columns.tolist()
+    if place == 'After':
+        seg1 = cols[:list(cols).index(ref_col) + 1]
+        seg2 = cols_to_move
+    if place == 'Before':
+        seg1 = cols[:list(cols).index(ref_col)]
+        seg2 = cols_to_move + [ref_col]
+    
+    seg1 = [i for i in seg1 if i not in seg2]
+    seg3 = [i for i in cols if i not in seg1 + seg2]
+    
+    return(df[seg1 + seg2 + seg3])
+To implement:
+df = movecol(df, 
+             cols_to_move=['Score','Grade'], 
+             ref_col='Room',
+             place='After')
+------------------------------DROP COLUMN---------------------------------
+del df['column_name']
+df.drop('column_name',axis = 1,inplace = True)
+
+drop col by index:
+df.drop(df.columns[[2,3]],axis=1,inplace=True)
+
+------------------------------DROP ROW---------------------
+df.drop(index = [1,2] ,axis = 0,inplace = True)
+
+-----------------------------------SORT------------------------------------
+df.sort_values(by, axis=0, ascending=True, inplace=False, kind='quicksort', na_position='last')
+
+df.sort_values(by=['col_name'], axis=0, ascending=True, inplace=True)
+
+
+by : str or list of str
+Name or list of names to sort by.
+if axis is 0 or ‘index’ then by may contain index levels and/or column labels
+if axis is 1 or ‘columns’ then by may contain column levels and/or index labels
+axis : {0 or ‘index’, 1 or ‘columns’}, default 0
+ascending : bool or list of bool, default True
+inplace : bool, default False
+kind : {‘quicksort’, ‘mergesort’, ‘heapsort’}, default ‘quicksort’
+na_position : {‘first’, ‘last’}, default ‘last’
+
+
+-------------------------------MULTIPLE SORT--------------------------------------
+df.sort_values(['a', 'b'], ascending=[True, False])
+
+-------------------------------RESET INDEX------------------------------------
+df.reset_index(drop = True,inplace = True)
+
+--------------------------------DDROP DUPLICATES------------------------------
+df.drop_duplicates(subset=['',''],keep = '',inplace = True)
+keep = {'first','last'}
+
+--------------------------------TO SERIES------------------------------
+data = pd.Series(df['column_name'])
+
+-------------------ASSIGN VALUE TO A COLUMN----------------------
+data.loc[index,'column_name'] = np.NaN
+
+------------------------------------MERGE-------------------------------------------
+df = left.merge(right, how='inner', on=None, left_on=None, right_on=None, left_index=False, right_index=False, sort=False, suffixes=('_x', '_y'))
+ex. all_time_data = all_time_data.merge(roas_90_days[['CampaignId','AdGroupId','Id','ROAS_90']],on =['CampaignId','AdGroupId','Id'],how = 'left')        
+
+
+how : {‘left’, ‘right’, ‘outer’, ‘inner’}, default ‘inner’
+on :label or list
+left_on : label or list, or array-like
+Column or index level names to join on in the left DataFrame. Can also be an array or list of arrays of the length of the left DataFrame. These arrays are treated as if they are columns.
+
+right_on : label or list, or array-like
+Column or index level names to join on in the right DataFrame. Can also be an array or list of arrays of the length of the right DataFrame. These arrays are treated as if they are columns.
+
+left_index : bool, default False
+Use the index from the left DataFrame as the join key(s). If it is a MultiIndex, the number of keys in the other DataFrame (either the index or a number of columns) must match the number of levels.
+
+right_index : bool, default False
+Use the index from the right DataFrame as the join key. Same caveats as left_index.
+
+sort : bool, default False
+suffixes : tuple of (str, str), default (‘_x’, ‘_y’)
+
+
+------------------------------------GROUP BY------------------------------------
+for name, group in data.groupby('column_name'):
+    sum = group['column_name'].sum() #Get summation of a column in group of a dataframe
+    for idx, row in group.iterrows():
+
+    # for name, group in df.groupby('Week'):
+    #     print(name)
+    #     # print(group)
+    #     temp_df = group.select_dtypes(pd.np.number).sum()
+
+------------------------Get first or last index from a dataframe(can be use in case of groupby with you need first index of a group)----------------
+first_index = df.first_valid_index()
+last_index = df.last_valid_index()
+
+-------------------------Sum of all rows in a dataframe----------------
+df['new_column_sum'] = df[''].sum(axis=1)
+
+---------------------------Get rows with value zero or greater than zero of less than zero-----------------
+df['> zero'] = df[cols].gt(0).sum(axis=1)
+df['< zero'] = df[cols].lt(0).sum(axis=1)
+df['== zero'] = df[cols].eq(0).sum(axis=1)
+
+---------------------Adding Characters to start and end of each row of a column in DataFrame-------------------
+final[column] = ('[' + final[column] + ']')
+
+----------------------column into int---------------------
+df['column_name'] = df['column_name'].astype(int)
+
+---------------------------Dynamic DataFrame creation---------------------------
+dict{}
+key----dynamic name
+data----list of list dynamic
+dict[key] = pd.DataFrame(data)
+dict[key].columns = dict[sheet_name].iloc[0]
+dict[key].drop([0],inplace= True)
+
+---------------------------Applying first row as column headers in DataFrame----------------------
+Assigns first row as column header and then drop first row
+
+df.columns = df.iloc[0]
+df.drop([0],inplace = True)
+
+---------------------------Inserting rows in Empty Dataframe--------------------------
+df_new = pd.DataFrame(columns = ['column1','column2'])
+i = 0
+for data in loop:
+	df_new.loc[i]=[data]
+	i = i + 1
+
+------------------------------Adding new column in existing DataFrame-------------------------
+df.insert(loc=position of col, column='A', value=new_col)
+
+-----------------------------------Apending DataFrames---------------------------------
+df_new = pd.DataFrame()
+df_new = df_new.append(df,sort = False) #Can be done in loop with muliple df's
+df_new.reset_index(drop = True,inplace = True)
+
+----------------------------Sum of columns as new row---------------------------
+df.loc['Total'] = df.select_dtypes(pd.np.number).sum()
+
+---------------------------------Setting value using loc--------------------------------------
+# Change the first name of all rows with an ID greater than 2000 to "John"
+data.loc[data['id'] > 2000, "first_name"] = "John"
+
+-------------------------------------Remove spaces in column of a dataframe------------------------------------
+df['column_name'] = df['column_name'].apply(lambda x : x.strip())
+
+
+-----------------------------------------PIVOT--------------------------------------
+table = pd.pivot_table(final_df, columns=['Month'], index=['Client Name'],fill_value = 0)
+
+----------------------------------To change column name from tuple to string------------------------------
+df.columns = ['{}_{}'.format(x[0], x[1]) for x in df.columns]
+
+------------------------------------Extract only date from timestamp----------------------------------------------
+data['Time']=data['TimeStamp'].apply(lambda x: x.strftime('%Y-%m-%d'))
+
+--------------------------------------Include index as column----------------------------------------
+df['new_column']=df.index
+df.reset_index(inplace=True)
+
+---------------------------------------Set column as index-------------------------------------------
+df = df.set_index(['column_name'])
+
+---------------------------------------Replace entire column of a dataframe by other column of dataframe------------------------------------
+df[1] = df1[1].values.tolist()
+
+-------------------------------------Replace all negative values in dataframe by zero--------------------------------
+df[df < 0] = 0
+
+-------------------------------------Check if a column contains a string------------------------------
+mel_count=a['Names'].str.contains('Mel').sum()
+if mel_count>0:
+    print ("There are {m} Mels".format(m=mel_count))
+
+if a['Names'].str.contains('Mel').any():
+    print ("Mel is there")
+
+df = df[df['col'].apply(str).str.contains("0")]
+
+-----------------------------------Get last non zero element------------------------------
+df['last'] = df.replace(0, np.nan).ffill(axis=1).iloc[:, -1].astype(int)
+df['last_site'] = df.apply(lambda x: x.iloc[x.nonzero()].iloc[-1], axis=1)
+
+
+-------------------------------------Get only those rows with all non zero values-------------------------
+df = df[~(df == 0).any(axis=1)]
+
+-------------------------------------Remove all zero row------------------------
+df = df[~(df == 0).all(axis=1)]
+
+--------------------------------------Difference between adjacent columns of dataframe------------------------------------
+new_df = df.diff(axis = 1)
+
+--------------------------------------INTERPOLATE------------------------------------
+df= df.interpolate(method='linear',axis = 1)
+
+--------------------------------------Dataframe column to lower case-------------------------------------
+df['x'] = df['x'].str.lower()
+
+---------------------------------------Calculate sum of all columns and append in last row of dataframe----------------------
+df.loc['Total'] = df.select_dtypes(pd.np.number).sum()
+
+----------------------------------------------Converting Dates into ML readable dates-----------------------------------------
+def add_datepart(df, fldname, drop=True):
+    fld = df[fldname]
+    if not np.issubdtype(fld.dtype, np.datetime64):
+        df[fldname] = fld = pd.to_datetime(fld, infer_datetime_format=True)
+    targ_pre = re.sub('[Dd]ate$', '', fldname)
+    for n in ('Year', 'Month', 'Week', 'Day', 'Dayofweek', 'Dayofyear',
+            'Is_month_end', 'Is_month_start', 'Is_quarter_end', 'Is_quarter_start', 'Is_year_end', 'Is_year_start'):
+        df[targ_pre+n] = getattr(fld.dt,n.lower())
+   # df[targ_pre+'Elapsed'] = fld.astype(np.int64) // 10**9
+    if drop: df.drop(fldname, axis=1, inplace=True)
+
+add_datepart(df, 'Date', drop=True)
+
+-------------------------------------------------Dataframe to sql----------------------------------------------
+from sqlalchemy import create_engine
+engine = create_engine('mysql://root:root@localhost/db_name?charset=utf8',encoding="utf-8")
+con = engine.connect()
+df.to_sql(con = con, name = 'table_name',index = False)
+con.close()
+
+-------------------------------------------------Sql to dataframe----------------------------------------------
+'mysql://user:password@server'
+
+from sqlalchemy import create_engine
+engine = create_engine('mysql://root:root@localhost/db_name?charset=utf8',encoding="utf-8")
+con = engine.connect()
+table_name = 'table_name'
+df = pd.read_sql_table(table_name, con)
+con.close()
+
+
+
+lambda x: True if x % 2 == 0 else False
+    # incoms = [incom for incom in incoms if str(incom) != 'nan']
+
+    # [f(x) if condition else g(x) for x in sequence]
+    # [f(x) for x in sequence if condition]
+
+
+filter rows / drop rows based on condition :
+  df = goal_roi_df[goal_roi_df['BO running status'] == 'No']
+  df[df.risk.isin(['Small','Medium','High'])]
+result = result[(result['var']>0.25) | (result['var']<-0.25)]
+ & for and
+ | for or
+
+
+
+index_list = accounts_df.index[accounts_df['ExternalCustomerId'].isin(list(no_target_accounts.values()))].tolist()
+
+
+for mis-matching no of entries in col in df :
+new_search_term_df = pandas.DataFrame({ key:pandas.Series(value) for key, value in statement_dict.items() })
+
+
+
+condition apply
+df['output'] = df['data'].apply(lambda x: 'true' if x <= 2.5 else 'false')
+
+for Keyword, while pasting in sheet
+adwords1['Keyword'] = adwords1['Keyword'].apply(lambda x: "'"+x if x.startswith('+') else x)
+
+
+function called on apply :
+df['Criteria'] = df[['Criteria','KeywordMatchType']].apply(match_type, axis=1)
+def match_type(x):
+    # print(x)
+    if x[1]=="Phrase":
+        return '"'+x[0]+'"'
+    elif x[1]=="Exact":
+        return '['+x[0]+']'
+    else:
+        return x[0]
+
+
+
+
+
+
+df['CpcBid'] = df[['CpcBid']].apply(cpc_bid, axis=1)
+def cpc_bid(x):
+    return int(x[0].replace(' ','').replace('auto:','').replace('--','0'))
+OR
+df['Budget'] = df[['BudgetId']].apply(get_campaign_budget, args=(adwords_client,), axis=1)
+def get_campaign_budget(x, client):     #positional args comes after x/series passed
+
+
+temp_df.shape
+
+
+list comprehension:
+[ expression for item in list if conditional ]
+[x+1 for x in l if x >= 45 else x+5]
+
+
+
+    final_df = final_df.sort_values(by=['Conversions_lastYr'], ascending=False)
